@@ -2,6 +2,8 @@
 import WeatherInfo from "./WeatherWrapper/WeatherInfo/WeatherInfo.vue";
 import WeatherFavorite from "./WeatherWrapper/WeatherFavorite/WeatherFavorite.vue";
 
+import { storage } from "../helpers/storage";
+
 export default {
   components: {
     WeatherInfo,
@@ -28,8 +30,11 @@ export default {
       this.favoriteCities = [...favoriteCitiesSet];
     },
 
+    saveFavoriteListToLocalStorage() {
+      storage.saveFavoriteCitiesListToLocalStorage(this.favoriteCities);
+    },
+
     deleteFromFavorite(city) {
-      console.log("del");
       const favoriteCitiesSet = new Set([...this.favoriteCities]);
       favoriteCitiesSet.delete(city);
       this.favoriteCities = [...favoriteCitiesSet];
@@ -39,6 +44,18 @@ export default {
       this.$emit("getWeatherData", city);
     },
   },
+
+  watch: {
+    favoriteCities: "saveFavoriteListToLocalStorage",
+  },
+
+  mounted() {
+    const restoredFavoriteList = storage.getDataFromLocalStorage();
+
+    if (restoredFavoriteList) {
+      this.favoriteCities = [...restoredFavoriteList];
+    }
+  },
 };
 </script>
 
@@ -46,6 +63,8 @@ export default {
   <div class="weather__info d-flex">
     <WeatherInfo
       @addToFavorite="addToFavorite"
+      :currentCity="currentCity"
+      :favoriteCities="favoriteCities"
       :weatherNow="weatherNow"
       :weatherDetails="weatherDetails"
       :weatherForecast="weatherForecast"

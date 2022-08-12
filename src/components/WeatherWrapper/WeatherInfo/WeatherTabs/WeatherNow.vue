@@ -2,9 +2,9 @@
 export default {
   props: {
     weatherNow: Object,
+    currentCity: String,
+    favoriteCities: Array,
   },
-
-  emits: ["addToFavorite"],
 
   data() {
     return {};
@@ -13,6 +13,20 @@ export default {
   methods: {
     addToFavorite() {
       this.$emit("addToFavorite");
+    },
+  },
+
+  computed: {
+    changeAddButtonImg() {
+      const hasCurrentCityAtFavorite = this.favoriteCities.find((item) => {
+        return item === this.currentCity;
+      });
+
+      if (hasCurrentCityAtFavorite) {
+        return true;
+      } else {
+        return false;
+      }
     },
   },
 };
@@ -26,12 +40,31 @@ export default {
     </div>
     <img :src="weatherNow.imgIcon" alt="" class="weather_icon" />
     <div class="addToFavority d-flex">
-      <p class="cityName current__city">{{ weatherNow.cityName }}</p>
-      <button class="addToFavorityButton button" @click="addToFavorite">
-        <img src="../../../../img/Shape.svg" alt="" />
-      </button>
+      <p class="cityName current__city">
+        {{ weatherNow.cityName }}
+      </p>
+      <button
+        class="addToFavorityButton buttonImg"
+        :class="{ buttonImgAtFavorite: changeAddButtonImg }"
+        @click="addToFavorite"
+      ></button>
     </div>
   </div>
 </template>
 
-<style></style>
+<style>
+.buttonImg {
+  width: 30px;
+  height: 30px;
+  background-image: url(../../../../img/Shape.svg);
+  background-repeat: no-repeat;
+  border: none;
+  background-color: transparent;
+}
+
+.buttonImgAtFavorite {
+  background-image: url(../../../../img/heartAdded.svg);
+  width: 35px;
+  height: 35px;
+}
+</style>

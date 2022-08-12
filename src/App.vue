@@ -3,6 +3,7 @@ import TheSearch from "./components/TheSearch.vue";
 import WeatherWrapper from "./components/WeatherWrapper.vue";
 
 import { getWeatherDetails, getForecastDetails } from "./helpers/service";
+import { storage } from "./helpers/storage";
 
 export default {
   components: {
@@ -33,6 +34,11 @@ export default {
         return;
       }
     },
+  },
+
+  mounted() {
+    const lastSelectedCity = storage.getLastSelectedCity();
+    this.getWeatherData(lastSelectedCity);
   },
 };
 </script>

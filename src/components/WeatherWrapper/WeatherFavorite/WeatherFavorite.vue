@@ -1,8 +1,11 @@
 <script>
+import { storage } from "../../../helpers/storage";
+
 export default {
   data() {
     return {
       pickedCity: "",
+      deletedCity: "",
     };
   },
 
@@ -22,20 +25,27 @@ export default {
       this.$emit("getWeatherData", city);
     },
 
-    changePickedCityBackground(city) {
-      const favoriteCitiesSet = new Set([...this.favoriteCities]);
-      const isSetHasCurrentCity = favoriteCitiesSet.has(this.currentCity);
-      const isCityPicked =
-        (this.pickedCity === city &&
-          this.pickedCity === this.currentCity &&
-          isSetHasCurrentCity) ||
-        (isSetHasCurrentCity && this.currentCity === city);
-      if (isCityPicked) {
-        return true;
-      } else {
-        return false;
+    savePickedSiteToLocalStorage() {
+      storage.addLastSelectedCityToLocalStorage(this.pickedCity);
+    },
+
+    saveLastDeletedCity(city) {
+      this.deletedCity = city;
+    },
+
+    resetLastSelectedCity() {
+      const wasPickedDeletedCity = this.pickedCity === this.deletedCity;
+      const wasDeletAfterReload = this.deletedCity === this.currentCity;
+
+      if (wasPickedDeletedCity || wasDeletAfterReload) {
+        storage.removeLastSelectedCityStorage();
       }
     },
+  },
+
+  watch: {
+    pickedCity: "savePickedSiteToLocalStorage",
+    deletedCity: "resetLastSelectedCity",
   },
 };
 </script>
@@ -51,7 +61,8 @@ export default {
       <div
         class="d-flex favoriteCity"
         :class="{
-          favoriteCityChecked: changePickedCityBackground(city),
+          favoriteCityChecked:
+            currentCity === city && currentCity === pickedCity,
         }"
       >
         <input
@@ -67,7 +78,15 @@ export default {
             {{ city }}
           </p>
         </label>
-        <span class="removeCity" @click="deleteFromFavorite(city)"> X </span>
+        <span
+          class="removeCity"
+          @click="
+            deleteFromFavorite(city);
+            saveLastDeletedCity(city);
+          "
+        >
+          X
+        </span>
       </div>
     </div>
   </div>

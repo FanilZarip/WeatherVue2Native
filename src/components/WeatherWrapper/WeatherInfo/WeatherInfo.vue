@@ -14,6 +14,8 @@ export default {
     weatherNow: Object,
     weatherDetails: Object,
     weatherForecast: Object,
+    currentCity: String,
+    favoriteCities: Array,
   },
 
   data() {
@@ -63,6 +65,8 @@ export default {
       :is="currentTab"
       class="tab"
       @addToFavorite="addToFavorite"
+      :currentCity="currentCity"
+      :favoriteCities="favoriteCities"
       :weatherNow="weatherNow"
       :weatherDetails="weatherDetails"
       :weatherForecast="weatherForecast"

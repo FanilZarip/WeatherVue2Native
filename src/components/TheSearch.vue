@@ -1,7 +1,7 @@
 <script>
-export default {
-  emits: ["getWeatherData"],
+import { storage } from "../helpers/storage";
 
+export default {
   data() {
     return {
       cityName: "",
@@ -13,13 +13,23 @@ export default {
       this.$emit("getWeatherData", this.cityName);
       this.cityName = "";
     },
+
+    resetLastSelectedCity() {
+      storage.removeLastSelectedCityStorage();
+    },
   },
 };
 </script>
 
 <template>
   <div class="search">
-    <form @submit.prevent="getWeatherData" class="d-flex weather__form">
+    <form
+      @submit.prevent="
+        getWeatherData();
+        resetLastSelectedCity();
+      "
+      class="d-flex weather__form"
+    >
       <input
         class="inputCity"
         placeholder="Enter city"
